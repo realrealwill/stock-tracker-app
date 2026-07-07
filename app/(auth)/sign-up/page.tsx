@@ -6,8 +6,13 @@ import SelectField from "@/components/Forms/SelectField";
 import {CountrySelectField} from "@/components/Forms/CountrySelectField";
 import {INVESTMENT_GOALS, PREFERRED_INDUSTRIES, RISK_TOLERANCE_OPTIONS} from "@/lib/constants";
 import FooterLink from "@/components/Forms/FooterLink";
+import {signalFromNodeResponse} from "next/dist/server/web/spec-extension/adapters/next-request";
+import {signUpWithEmail} from "@/lib/actions/auth.actions";
+import {useRouter} from "next/navigation"
+import {toast} from "sonner"
 
 const SignUp = () => {
+    const router = useRouter();
     const {
         register,
         handleSubmit,
@@ -28,9 +33,14 @@ const SignUp = () => {
 
     const onSubmit: SubmitHandler<SignUpFormData> = async (data: SignUpFormData) => {
         try {
-            console.log(data)
+            // signUpWithEmail
+            const result = await signUpWithEmail(data)
+            if (result.success) router.push('/')
         } catch (e) {
             console.error(e)
+            toast.error('Sign up failed.', {
+                description: e instanceof Error ? e.message : 'Failed to create an account'
+            })
         }
     }
 
